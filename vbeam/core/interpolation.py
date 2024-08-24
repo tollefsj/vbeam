@@ -3,7 +3,7 @@
 from abc import abstractmethod
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 
 
 class InterpolationSpace1D(Module):

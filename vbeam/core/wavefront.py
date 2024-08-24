@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from typing import Callable, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 from vbeam.util.geometry.v2 import distance
 
 from .element_geometry import ElementGeometry

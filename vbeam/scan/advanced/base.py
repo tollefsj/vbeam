@@ -2,7 +2,7 @@ from abc import abstractmethod
 from typing import Callable, Literal, Optional, Sequence, Tuple, TypeVar, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 from vbeam.scan.base import CoordinateSystem, Scan
 
 TSelf = TypeVar("TSelf", bound="WrappedScan")

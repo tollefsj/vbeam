@@ -2,7 +2,7 @@ from typing import Callable, Iterable, Optional
 
 from vbeam.core import Apodization
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import field
+from vbeam.module import field
 
 
 class CombinedApodization(Apodization):

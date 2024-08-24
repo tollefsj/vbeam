@@ -4,7 +4,7 @@ import numpy
 
 from vbeam.core import SpeedOfSound
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import field
+from vbeam.module import field
 from vbeam.interpolation import FastInterpLinspace
 from vbeam.scan import Scan
 from vbeam.util import ensure_2d_point

@@ -5,7 +5,7 @@ from functools import reduce
 from typing import Callable, Literal, Optional, Tuple, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 from vbeam.util import ensure_positive_index
 
 

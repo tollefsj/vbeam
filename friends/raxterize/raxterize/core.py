@@ -6,7 +6,7 @@ import jax.numpy as jnp
 
 from vbeam.fastmath import backend_manager
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 from vbeam.util.geometry import Line
 
 backend_manager.active_backend = "jax"

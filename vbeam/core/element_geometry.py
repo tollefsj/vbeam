@@ -5,7 +5,7 @@ the position, orientation, etc.
 from typing import Callable, Optional
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
 

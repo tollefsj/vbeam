@@ -2,7 +2,7 @@
 :term:`sender` and a :term:`point`, and a :term:`point` and a :term:`receiver`."""
 
 from abc import abstractmethod
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 
 from vbeam.fastmath import numpy as np
 

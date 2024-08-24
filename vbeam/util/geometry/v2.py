@@ -6,7 +6,7 @@ from abc import abstractmethod
 from typing import Optional, Tuple, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 
 ####
 # Functions for calculating intersections.

@@ -12,7 +12,7 @@ focal point of the transmitted wave. A transmitted wave is usually one of three 
 from typing import Callable, Optional
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.module import Module
+from vbeam.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
 
