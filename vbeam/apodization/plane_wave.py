@@ -2,14 +2,12 @@ from typing import Optional, Tuple, Union
 
 from vbeam.core import Apodization, ElementGeometry, WaveData
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.util import ensure_2d_point
 from vbeam.util.geometry.v2 import Line, distance
 
 from .window import Window
 
 
-@traceable_dataclass(("array_bounds", "window"))
 class PlaneWaveTransmitApodization(Apodization):
     array_bounds: Tuple[np.ndarray, np.ndarray]
     window: Optional[Window] = None
@@ -65,7 +63,6 @@ class PlaneWaveTransmitApodization(Apodization):
         return apodization_value * 1.0
 
 
-@traceable_dataclass(("window", "f_number"))
 class PlaneWaveReceiveApodization(Apodization):
     window: Window
     f_number: Union[float, Tuple[float, float]]

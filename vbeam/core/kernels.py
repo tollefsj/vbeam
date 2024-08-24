@@ -1,5 +1,5 @@
-"""Function (:func:`.signal_for_point`) for beamforming a single point, which is 
-usually repeated over all :term:`points<Point>`, :term:`receivers<Receiver>` and 
+"""Function (:func:`.signal_for_point`) for beamforming a single point, which is
+usually repeated over all :term:`points<Point>`, :term:`receivers<Receiver>` and
 :term:`transmits<Transmit>` (or any other arbitrary dimensions).
 
 See also:

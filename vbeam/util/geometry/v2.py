@@ -2,12 +2,11 @@
 
 It's all in this one module because it's all so closely related."""
 
-
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Optional, Tuple, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 
 ####
 # Functions for calculating intersections.
@@ -77,11 +76,12 @@ def rotate(point: np.ndarray, theta: float, phi: float) -> np.ndarray:
     # Rotate the point
     return rotation_matrix_theta @ rotation_matrix_phi @ point
 
+
 ####
 # Curve classes
 
 
-class Curve(ABC):
+class Curve(Module):
     """A 2D curve. See method docstrings for details."""
 
     @abstractmethod
@@ -109,7 +109,6 @@ class Curve(ABC):
         the (potentially none) intersection points."""
 
 
-@traceable_dataclass(("anchor", "direction"))
 class Line(Curve):
     anchor: np.ndarray
     direction: np.ndarray
@@ -151,7 +150,6 @@ class Line(Curve):
         return np.array([-self.direction[1], self.direction[0]])
 
 
-@traceable_dataclass(("center", "radius"))
 class Circle(Curve):
     center: np.ndarray
     radius: float
@@ -172,7 +170,6 @@ class Circle(Curve):
             raise NotImplementedError
 
 
-@traceable_dataclass(("f1", "f2", "d"))
 class Ellipse(Curve):
     """An ellipse defined by two focus points and the summed distance from each to
     points on the ellipse.

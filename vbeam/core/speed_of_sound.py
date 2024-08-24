@@ -1,12 +1,13 @@
-"""Interface for sampling the speed of sound on a line, typically the line between a 
-:term:`sender` and a :term:`point`, and a :term:`point` and a :term:`receiver`. """
+"""Interface for sampling the speed of sound on a line, typically the line between a
+:term:`sender` and a :term:`point`, and a :term:`point` and a :term:`receiver`."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
+from vbeam.fastmath.module import Module
 
 from vbeam.fastmath import numpy as np
 
 
-class SpeedOfSound(ABC):
+class SpeedOfSound(Module):
     @abstractmethod
     def average(
         self,

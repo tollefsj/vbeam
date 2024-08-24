@@ -1,24 +1,23 @@
 """A datastructure for data related to a transmitted wave.
 
-The most important field of :class:`WaveData` is :attr:`source`, which represents the 
+The most important field of :class:`WaveData` is :attr:`source`, which represents the
 focal point of the transmitted wave. A transmitted wave is usually one of three types:
 
 * A focused wave, where the focal point is in front of the transducer.
 * A diverging wave, where the focal point is behind the transducer.
-* A plane wave, which is a wave that is *"focused"* at infinity. In this case, the 
+* A plane wave, which is a wave that is *"focused"* at infinity. In this case, the
   :attr:`source` field is either ``np.inf`` (infinity) or ``None``.
 """
 
 from typing import Callable, Optional
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
 
 
-@traceable_dataclass(("source", "azimuth", "elevation", "t0"))
-class WaveData:
+class WaveData(Module):
     """A vectorizable container of wave data: anything that is specific to a single
     transmitted wave. See this class' fields for what that could be.
 

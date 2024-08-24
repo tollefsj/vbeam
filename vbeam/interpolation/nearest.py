@@ -1,9 +1,7 @@
 from vbeam.core import InterpolationSpace1D
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 
 
-@traceable_dataclass(data_fields=("min", "d", "n", "left", "right"))
 class NearestInterpolation(InterpolationSpace1D):
     """Interpolate by rounding (nearest neighbour).
 

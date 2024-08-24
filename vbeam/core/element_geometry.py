@@ -1,17 +1,16 @@
-"""A datastructure for representing a transducer element (or the full array), including 
+"""A datastructure for representing a transducer element (or the full array), including
 the position, orientation, etc.
 """
 
 from typing import Callable, Optional
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
 
 
-@traceable_dataclass(("position", "theta", "phi", "sub_elements", "parent_element"))
-class ElementGeometry:
+class ElementGeometry(Module):
     """A vectorizable container of element geometry.
 
     ElementGeometry is vectorizable, meaning that it works with vmap. This way we can

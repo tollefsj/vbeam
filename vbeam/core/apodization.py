@@ -1,14 +1,15 @@
 "Point-based apodization for weighting the delayed signal."
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 from vbeam.fastmath import numpy as np
+from vbeam.fastmath.module import Module
 
 from .element_geometry import ElementGeometry
 from .wave_data import WaveData
 
 
-class Apodization(ABC):
+class Apodization(Module):
     @abstractmethod
     def __call__(
         self,

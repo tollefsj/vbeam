@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from typing import Callable, Literal, Optional, Sequence, Tuple, TypeVar, Union
 
 from vbeam.fastmath import numpy as np
+from vbeam.fastmath.module import Module
 from vbeam.scan.base import CoordinateSystem, Scan
 
 TSelf = TypeVar("TSelf", bound="WrappedScan")
@@ -13,7 +14,7 @@ def _wrap_with_new_base_scan(wrapped_scan: TSelf, new_base_scan: Scan) -> TSelf:
     return new_copy
 
 
-class WrappedScan(Scan, ABC):
+class WrappedScan(Scan):
     """A scan that wraps another scan (the base_scan).
 
     This is useful for composing scans to make more advanced scans."""
@@ -89,7 +90,7 @@ class WrappedScan(Scan, ABC):
             ) from e
 
 
-class ExtraDimsScanMixin(ABC):
+class ExtraDimsScanMixin(Module):
     """A mixin for scans that work with more than just the "points" dimension. For
     example, the
     :class:`~vbeam.scan.optimized.apodization_filtered_scan.ApodizationFilteredScan`

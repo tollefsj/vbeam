@@ -1,7 +1,6 @@
-from typing import Callable, Literal, Optional, Tuple, Union, overload
+from typing import Callable, Optional, Tuple, Union, overload
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.scan.base import CoordinateSystem, Scan
 from vbeam.scan.util import parse_axes, polar_bounds_to_cartesian_bounds, scan_convert
 from vbeam.util import _deprecations
@@ -9,7 +8,6 @@ from vbeam.util.arrays import grid
 from vbeam.util.coordinate_systems import as_cartesian
 
 
-@traceable_dataclass(("azimuths", "elevations", "depths", "apex"))
 class SectorScan(Scan):
     azimuths: np.ndarray
     elevations: Optional[np.ndarray]  # May be None for 2D scans

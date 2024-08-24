@@ -1,23 +1,23 @@
-"""Wavefront models that return the distance that a wave has traveled. 
-:class:`TransmittedWavefront` models the transmitted wave while 
+"""Wavefront models that return the distance that a wave has traveled.
+:class:`TransmittedWavefront` models the transmitted wave while
 :class:`ReflectedWavefront` models a reflected/backscattered wave.
 
-Wavefront models return a distance in meters. This way they are decoupled from the 
+Wavefront models return a distance in meters. This way they are decoupled from the
 speed of sound of the medium."""
 
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from dataclasses import dataclass
 from typing import Callable, Union
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 from vbeam.util.geometry.v2 import distance
 
 from .element_geometry import ElementGeometry
 from .wave_data import WaveData
 
 
-class TransmittedWavefront(ABC):
+class TransmittedWavefront(Module):
     """The base class for defining wavefront models of transmitted waves.
 
     :class:`TransmittedWavefront` models are used to calculate the *distance (in
@@ -76,8 +76,7 @@ class TransmittedWavefront(ABC):
         """
 
 
-@traceable_dataclass()
-class ReflectedWavefront:
+class ReflectedWavefront(Module):
     """The base class for defining wavefront models of reflected/backscattered waves.
 
     This is usually just the euclidian distance as there are limits to what we can
@@ -91,8 +90,7 @@ class ReflectedWavefront:
         return distance(point_position, receiver.position)
 
 
-@dataclass
-class MultipleTransmitDistances:
+class MultipleTransmitDistances(Module):
     """Multiple distance values returned from a :class:`TransmittedWavefront`.
 
     Some more advanced :class:`TransmittedWavefront` models may return multiple

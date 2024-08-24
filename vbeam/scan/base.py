@@ -1,10 +1,11 @@
 import operator
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from enum import Enum
 from functools import reduce
 from typing import Callable, Literal, Optional, Tuple, Union
 
 from vbeam.fastmath import numpy as np
+from vbeam.fastmath.module import Module
 from vbeam.util import ensure_positive_index
 
 
@@ -13,7 +14,7 @@ class CoordinateSystem(Enum):
     POLAR = "polar"
 
 
-class Scan(ABC):
+class Scan(Module):
     @abstractmethod
     def get_points(self, flatten: bool = True) -> np.ndarray:
         """Return the points defined by the scan, flattened to a (N, 3) array by

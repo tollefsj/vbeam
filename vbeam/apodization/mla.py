@@ -2,13 +2,11 @@ from typing import Tuple
 
 from vbeam.core import Apodization, ElementGeometry, WaveData
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.util.geometry.v2 import Line
 
 from .window import Window
 
 
-@traceable_dataclass(("window", "beam_width", "array_bounds_x"))
 class MLAApodization(Apodization):
     """Perform multiple line acquisition (MLA) in cartesian space.
 

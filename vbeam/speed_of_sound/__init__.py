@@ -4,17 +4,13 @@ import numpy
 
 from vbeam.core import SpeedOfSound
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import field
 from vbeam.interpolation import FastInterpLinspace
 from vbeam.scan import Scan
 from vbeam.util import ensure_2d_point
 from vbeam.util.geometry.v2 import distance
 
 
-@traceable_dataclass(
-    data_fields=("values", "x_axis", "z_axis", "default_speed_of_sound"),
-    aux_fields=("n_samples",),
-)
 class HeterogeneousSpeedOfSound(SpeedOfSound):
     """Sample the speed of sound between sender, point, and receiver position, and
     return the average.
@@ -27,7 +23,7 @@ class HeterogeneousSpeedOfSound(SpeedOfSound):
     values: np.ndarray
     x_axis: FastInterpLinspace
     z_axis: FastInterpLinspace
-    n_samples: int
+    n_samples: int = field(static=True)
     default_speed_of_sound: float = 1540.0
 
     def average(
@@ -99,7 +95,6 @@ class HeterogeneousSpeedOfSound(SpeedOfSound):
         )
 
 
-@traceable_dataclass(data_fields=("speed_of_sound_map", "x_axis", "z_axis", "default_speed_of_sound"))
 class DistributedGlobalSpeedOfSound(SpeedOfSound):
     speed_of_sound_map: np.ndarray
     x_axis: FastInterpLinspace

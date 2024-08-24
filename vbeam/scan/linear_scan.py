@@ -1,13 +1,11 @@
-from typing import Callable, Literal, Optional, Tuple, Union, overload
+from typing import Callable, Optional, Tuple, Union, overload
 
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.scan.base import CoordinateSystem, Scan
 from vbeam.scan.util import parse_axes
 from vbeam.util.arrays import grid
 
 
-@traceable_dataclass(("x", "y", "z"))
 class LinearScan(Scan):
     x: np.ndarray
     y: Optional[np.ndarray]

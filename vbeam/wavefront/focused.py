@@ -1,10 +1,8 @@
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.wavefront.plane import PlaneWavefront
 
 
-@traceable_dataclass()
 class FocusedSphericalWavefront(TransmittedWavefront):
     def __call__(
         self,
@@ -19,7 +17,6 @@ class FocusedSphericalWavefront(TransmittedWavefront):
         ) - source_point_dist * np.sign(wave_data.source[2] - point_position[2])
 
 
-@traceable_dataclass(("pw_margin",))
 class FocusedHybridWavefront(TransmittedWavefront):
     pw_margin: float = 0.001
 

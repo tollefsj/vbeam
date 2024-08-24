@@ -3,12 +3,10 @@ from typing import Tuple
 
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.util.geometry import Line
 from vbeam.wavefront import FocusedSphericalWavefront
 
 
-@traceable_dataclass(("array_bounds", "base_wavefront"))
 class UnifiedWavefront(TransmittedWavefront):
     """Implementation of the unified wavefront model
 

@@ -6,14 +6,14 @@ import jax.numpy as jnp
 
 from vbeam.fastmath import backend_manager
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 from vbeam.util.geometry import Line
 
 backend_manager.active_backend = "jax"
 
+
 # TODO: Make vbeam.util.geometry.Line work with 2D points
-@traceable_dataclass(("a", "b", "c"))
-class LineNB:
+class LineNB(Module):
     a: float
     b: float
     c: float

@@ -2,11 +2,9 @@ from typing import Tuple
 
 from vbeam.core import InterpolationSpace1D
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.util import ensure_positive_index
 
 
-@traceable_dataclass(data_fields=("min", "d", "n"))
 class FastInterpLinspace(InterpolationSpace1D):
     """Interpolation for linspace.
 

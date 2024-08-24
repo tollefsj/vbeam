@@ -1,9 +1,8 @@
 from vbeam.fastmath import numpy as np
-from vbeam.fastmath.traceable import traceable_dataclass
+from vbeam.fastmath.module import Module
 
 
-@traceable_dataclass(("a", "b", "c"))
-class Line:
+class Line(Module):
     """A line as defined by a*x + b*z + c = 0.
 
     Note that only 2D lines are supported but all point-parameters and returned points
