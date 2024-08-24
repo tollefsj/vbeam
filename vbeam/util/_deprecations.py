@@ -6,6 +6,35 @@ def _get_function_name(f: callable):
     return getattr(f, "__qualname__", getattr(f, "__name__"))
 
 
+def deprecated(version: str, reason):
+    """Warn when calling f because it is deprecated.
+
+    >>> import warnings
+    >>> @deprecated("1.0.6", "Use new_function() instead.")
+    ... def f(a):
+    ...   return a + 1
+    >>> with warnings.catch_warnings(record=True) as w:
+    ...   f(23)
+    ...   print(w[0].message)
+    24
+    f is deprecated since version 1.0.6. Use new_function() instead.
+    """
+
+    def decorator(f):
+        @functools.wraps(f)
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f"{f.__name__} is deprecated since version {version}. {reason}",
+                category=DeprecationWarning,
+                stacklevel=2,
+            )
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
 def renamed_kwargs(version: str, **renamed_kwargs: str):
     """Warn when passing an argument by name when that argument has been renamed in a
     recent version and the old name is deprecated.
