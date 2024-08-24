@@ -1,6 +1,6 @@
 """Functions for making classes and fields traceable for the backends.
 
-Use `traceable_dataclass` for your custom classes and `traceable` for field types that 
+Use `traceable_dataclass` for your custom classes and `traceable` for field types that
 you know will be traceable by the active backend at runtime.
 
 These methods sets attributes on the class or types that can be understood when calling
@@ -41,9 +41,19 @@ A (long, but illustrative) example:
 ...
 >>> print(res.numpy(), tape.gradient(res, container.item.a).numpy())  # 6.0 1.0
 """
+
 from vbeam.fastmath import numpy as np
+from vbeam.util._deprecations import deprecated
+
+_using_module_example_str = """from vbeam.module import Module, field
+class MyClass(Module):
+    a: float
+    b: float = field(static=True)  # <- Use static fields instead of typing them to aux_fields."""
 
 
+@deprecated(
+    "1.0.6", f"Inherit from vbeam.Module instead. Example: \n{_using_module_example_str}\n"
+)
 def traceable_dataclass(data_fields=(), aux_fields=()):
     """Decorate the class as a traceable dataclass.
 
@@ -101,6 +111,7 @@ def traceable_dataclass(data_fields=(), aux_fields=()):
     return as_traceable_dataclass_inner
 
 
+@deprecated("1.0.6", "Backend.make_traceable fixes what set out to do.")
 def traceable(t):
     """Mark the type-annotation of a field as traceable.
 
@@ -126,19 +137,21 @@ def traceable(t):
     return Traceable
 
 
+@deprecated("1.0.6", "You should check if the object is an instance of Module instead.")
 def is_traceable_dataclass(cls):
     """Return True if the class has been decorated with `@traceable_dataclass(...)`."""
     return getattr(cls, "__vbeam_fastmath_traceable_custom__", False)
 
 
+@deprecated("1.0.6", "Backend.make_traceable fixes what set out to do.")
 def is_traceable(t):
     """Return True if the type has been wrapped with `traceable`."""
     return getattr(t, "__vbeam_fastmath_traceable__", False)
 
-
+@deprecated("1.0.6", "Use dataclasses.fields(cls) instead.")
 def get_traceable_data_fields(cls):
     return getattr(cls, "__vbeam_fastmath_traceable_data_fields__", ())
 
-
+@deprecated("1.0.6", "Use dataclasses.fields(cls) instead.")
 def get_traceable_aux_fields(cls):
     return getattr(cls, "__vbeam_fastmath_traceable_aux_fields__", ())
