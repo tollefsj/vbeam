@@ -114,7 +114,6 @@ class RTBApodization(Apodization):
         )
 
 
-@traceable_dataclass((("array_width", "minimum_aperture", "window", "use_parent")))
 class SteppingApertureRTBApodization(Apodization):
     array_width: float
     minimum_aperture: float = 0.001  # TODO: Calculate this based on F# and wavelength
