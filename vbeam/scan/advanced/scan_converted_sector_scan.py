@@ -1,6 +1,6 @@
 from typing import Optional, Tuple
 
-from vbeam.fastmath import backend_manager
+from vbeam.fastmath import Array, backend_manager
 from vbeam.fastmath import numpy as np
 from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.scan.advanced.base import WrappedScan
@@ -12,7 +12,7 @@ from vbeam.util.vmap import vmap_all_except
 
 def _get_scan_converted_points_and_indices(
     base_scan: SectorScan,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[Array, Array]:
     # Scan convert a grid of ones to get a mask of the points that are mapped to the
     # cartesian grid.
     mask = scan_convert(np.ones(base_scan.shape), base_scan)
@@ -36,11 +36,12 @@ def _get_scan_converted_points_and_indices(
 
 @traceable_dataclass(("_points", "_indices"), ("_base_scan",))
 class ScanConvertedSectorScan(WrappedScan):
+
     def __init__(
         self,
         _base_scan: SectorScan,
-        _points: Optional[np.ndarray] = None,
-        _indices: Optional[np.ndarray] = None,
+        _points: Optional[Array] = None,
+        _indices: Optional[Array] = None,
     ):
         if _points is None or _indices is None:
             _points, _indices = _get_scan_converted_points_and_indices(_base_scan)
@@ -49,17 +50,17 @@ class ScanConvertedSectorScan(WrappedScan):
         self._points = _points
         self._indices = _indices
 
-    def get_points(self, flatten: bool = True) -> np.ndarray:
+    def get_points(self, flatten: bool = True) -> Array:
         if not flatten:
             raise ValueError(
                 f"{self.__class__.__name__} only supports getting flattened points."
             )
         return self._points
 
-    def unflatten(self, imaged_points: np.ndarray, points_axis: int = -1) -> np.ndarray:
+    def unflatten(self, imaged_points: Array, points_axis: int = -1) -> Array:
         image = np.zeros((self.base_scan.num_points,), dtype=imaged_points.dtype)
 
-        def unflatten_1(imaged_points_1: np.ndarray):
+        def unflatten_1(imaged_points_1: Array):
             return np.add.at(image, self._indices, imaged_points_1)
 
         unflatten_all = vmap_all_except(unflatten_1, axis=points_axis)

@@ -2,6 +2,7 @@ from dataclasses import field
 from typing import Tuple
 
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.util.geometry import Line
 from vbeam.wavefront import FocusedSphericalWavefront
@@ -12,7 +13,7 @@ class UnifiedWavefront(TransmittedWavefront):
 
     https://doi.org/10.1109/tmi.2015.2456982"""
 
-    array_bounds: Tuple[np.ndarray, np.ndarray]
+    array_bounds: Tuple[Array, Array]
     base_wavefront: TransmittedWavefront = field(
         default_factory=FocusedSphericalWavefront
     )
@@ -20,7 +21,7 @@ class UnifiedWavefront(TransmittedWavefront):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> float:
         # Set up the geometry

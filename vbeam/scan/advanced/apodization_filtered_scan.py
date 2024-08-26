@@ -1,10 +1,9 @@
 from typing import Optional, Sequence, Tuple
 
 from spekk import Spec
-
 from vbeam.apodization.util import get_apodization_values
 from vbeam.core import Apodization, ElementGeometry, WaveData
-from vbeam.fastmath import backend_manager
+from vbeam.fastmath import Array, backend_manager
 from vbeam.fastmath import numpy as np
 from vbeam.fastmath.traceable import traceable_dataclass
 from vbeam.scan.advanced.base import ExtraDimsScanMixin, WrappedScan
@@ -14,9 +13,9 @@ from vbeam.util.vmap import vmap_all_except
 
 
 def get_point_indices_for_transmits(
-    apodization_values: np.ndarray,
+    apodization_values: Array,
     threshold: float,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[Array, Array]:
     """Return the indices (and indices mask which is explained further
     down) for the points in an image that are to be imaged for a given transmit. Which
     points that are selected to be imaged are determined by the given apodization object
@@ -76,14 +75,14 @@ def get_point_indices_for_transmits(
 
 
 def recombine1(
-    image: np.ndarray,
-    imaged_points: np.ndarray,
-    indices: np.ndarray,
-    indices_mask: np.ndarray,
+    image: Array,
+    imaged_points: Array,
+    indices: Array,
+    indices_mask: Array,
     points_axis: int,
 ):
     @vmap_all_except(points_axis)
-    def recombine(imaged_points: np.ndarray) -> np.ndarray:
+    def recombine(imaged_points: Array) -> Array:
         return np.add.at(image, indices, imaged_points * indices_mask)
 
     return recombine(imaged_points)
@@ -103,6 +102,7 @@ def recombine1(
     ),
 )
 class ApodizationFilteredScan(WrappedScan, ExtraDimsScanMixin):
+
     def __init__(
         self,
         base_scan: Scan,
@@ -113,9 +113,9 @@ class ApodizationFilteredScan(WrappedScan, ExtraDimsScanMixin):
         spec: Spec,
         dimensions: Sequence[str],
         threshold: float,
-        _points: Optional[np.ndarray] = None,
-        _indices: Optional[np.ndarray] = None,
-        _indices_mask: Optional[np.ndarray] = None,
+        _points: Optional[Array] = None,
+        _indices: Optional[Array] = None,
+        _indices_mask: Optional[Array] = None,
     ):
         # We need to store these values in case we need to recompute the indices.
         # For example, if a user resizes the scan then the indices must be recomputed.
@@ -136,7 +136,7 @@ class ApodizationFilteredScan(WrappedScan, ExtraDimsScanMixin):
         if _points is None or _indices is None or _indices_mask is None:
             self._recompute_indices()
 
-    def get_points(self, flatten: bool = True) -> np.ndarray:
+    def get_points(self, flatten: bool = True) -> Array:
         if not flatten:
             raise ValueError(
                 f"{self.__class__.__name__} only supports getting flattened points."
@@ -145,10 +145,10 @@ class ApodizationFilteredScan(WrappedScan, ExtraDimsScanMixin):
 
     def unflatten(
         self,
-        imaged_points: np.ndarray,
+        imaged_points: Array,
         transmits_axis: int,
         points_axis: int,
-    ) -> np.ndarray:
+    ) -> Array:
         recombine = np.vmap(
             recombine1,
             [None, transmits_axis, 0, 0, None],

@@ -1,17 +1,18 @@
 """Experimental transformations. See individual classes for documentation."""
 
-
 import operator
 from dataclasses import dataclass
 from typing import Callable, Sequence, TypeVar
 
 import jax
 import jax.numpy as jnp
+
 from spekk import Spec
 from spekk.process.transformations import Transformation
+from vbeam.fastmath import Array
 
 
-def i_at(arr: jnp.ndarray, i: int, ax: int):
+def i_at(arr: Array, i: int, ax: int):
     "Index arr at index i along axis ax."
     indices = (slice(None),) * ax + (i,)
     return arr[indices]
@@ -87,10 +88,10 @@ class Reduce(Transformation):
     A Reduce transformation is generally a ForAll and Apply transformation combined,
     if the Apply transformation somehow aggregates the result (for example by summing
     over the vectorized axis).
-    
+
     As a concrete example:
     ForAll("transmits") followed by Apply(np.sum, Axis("transmits") is equivalent to
-    Reduce.Sum("transmits"), but using Reduce.Sum will likely allocate a lot less 
+    Reduce.Sum("transmits"), but using Reduce.Sum will likely allocate a lot less
     memory, potentially at the cost of processing time.
 
     Args:

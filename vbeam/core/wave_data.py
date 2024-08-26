@@ -11,7 +11,7 @@ focal point of the transmitted wave. A transmitted wave is usually one of three 
 
 from typing import Callable, Optional
 
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
@@ -29,7 +29,7 @@ class WaveData(Module):
     64 transmitted waves in the dataset (each with x, y, and z source coordinates)."""
 
     # The location (x, y, z) of the virtual source for the transmitted wave
-    source: Optional[np.ndarray] = None
+    source: Optional[Array] = None
     azimuth: Optional[float] = None
     elevation: Optional[float] = None
     # The time at which the transmitted wave passed through the "sender" element
@@ -45,8 +45,8 @@ class WaveData(Module):
         >>> wave_data[1]
         WaveData(source=array([1, 1, 1]), azimuth=1, elevation=None, t0=None)
         """
-        _maybe_getitem = (
-            lambda attr: attr.__getitem__(*args) if attr is not None else None
+        _maybe_getitem = lambda attr: (
+            attr.__getitem__(*args) if attr is not None else None
         )
         return WaveData(
             _maybe_getitem(self.source),
@@ -73,7 +73,7 @@ class WaveData(Module):
     def with_updates_to(
         self,
         *,
-        source: Callable[[np.ndarray], np.ndarray] = identity_fn,
+        source: Callable[[Array], Array] = identity_fn,
         azimuth: Callable[[float], float] = identity_fn,
         elevation: Callable[[float], float] = identity_fn,
         t0: Callable[[float], float] = identity_fn,

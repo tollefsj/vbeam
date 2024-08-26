@@ -1,12 +1,14 @@
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 
 
 class PlaneWavefront(TransmittedWavefront):
+
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> float:
         diff = point_position - sender.position

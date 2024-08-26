@@ -1,5 +1,5 @@
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.util.geometry.v2 import distance
 
 
@@ -20,7 +20,7 @@ class REFoCUSWavefront(TransmittedWavefront):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> float:
         """Return the distance that the wave travels, starting from time 0, to when it

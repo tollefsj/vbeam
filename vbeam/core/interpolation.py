@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.module import Module
 
 
@@ -10,7 +10,7 @@ class InterpolationSpace1D(Module):
     """An interface for interpolating data in 1D."""
 
     @abstractmethod
-    def __call__(self, x: np.ndarray, fp: np.ndarray) -> np.ndarray:
+    def __call__(self, x: Array, fp: Array) -> Array:
         """Evaluate the points x on the discrete array fp.
 
         Any point in x that is outside of the range of fp is evaluated as zero."""

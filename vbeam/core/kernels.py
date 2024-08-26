@@ -20,14 +20,15 @@ from vbeam.core.wavefront import (
     ReflectedWavefront,
     TransmittedWavefront,
 )
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 
 
 def signal_for_point(
     sender: ElementGeometry,
-    point_position: np.ndarray,
+    point_position: Array,
     receiver: ElementGeometry,
-    signal: np.ndarray,
+    signal: Array,
     transmitted_wavefront: TransmittedWavefront,
     reflected_wavefront: ReflectedWavefront,
     speed_of_sound: Union[float, SpeedOfSound],
@@ -35,7 +36,7 @@ def signal_for_point(
     interpolate: InterpolationSpace1D,
     modulation_frequency: Optional[float],
     apodization: Apodization,
-) -> np.ndarray:
+) -> Array:
     """The core beamforming function. Return the delayed and interpolated signal from a
     single transmit, for a single receiver, for a single point (pixel).
 
@@ -104,9 +105,9 @@ class SignalForPointData(KernelData):
     See the docstring of signal_for_point for documentation of each field."""
 
     sender: ElementGeometry
-    point_position: np.ndarray
+    point_position: Array
     receiver: ElementGeometry
-    signal: np.ndarray
+    signal: Array
     transmitted_wavefront: TransmittedWavefront
     reflected_wavefront: ReflectedWavefront
     speed_of_sound: Union[float, SpeedOfSound]

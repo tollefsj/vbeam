@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Callable, Literal, Optional, Sequence, Tuple, TypeVar, Union
 
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.module import Module
 from vbeam.scan.base import CoordinateSystem, Scan
 
@@ -25,20 +25,18 @@ class WrappedScan(Scan):
     def replace(
         self: TSelf,
         # "unchanged" means that the axis will not be changed.
-        **kwargs: Union[np.ndarray, None, Literal["unchanged"]],
+        **kwargs: Union[Array, None, Literal["unchanged"]],
     ) -> TSelf:
         return _wrap_with_new_base_scan(self.base_scan.replace(**kwargs))
 
-    def update(
-        self: TSelf, **kwargs: Optional[Callable[[np.ndarray], np.ndarray]]
-    ) -> TSelf:
+    def update(self: TSelf, **kwargs: Optional[Callable[[Array], Array]]) -> TSelf:
         return _wrap_with_new_base_scan(self.base_scan.update(**kwargs))
 
     def resize(self: TSelf, kwargs: Optional[int]) -> TSelf:
         return _wrap_with_new_base_scan(self.base_scan.resize(**kwargs))
 
     @property
-    def axes(self) -> Tuple[np.ndarray, ...]:
+    def axes(self) -> Tuple[Array, ...]:
         return self.base_scan.axes
 
     @property
@@ -46,11 +44,11 @@ class WrappedScan(Scan):
         return self.base_scan.shape
 
     @property
-    def bounds(self) -> np.ndarray:
+    def bounds(self) -> Array:
         return self.base_scan.bounds
 
     @property
-    def cartesian_bounds(self) -> np.ndarray:
+    def cartesian_bounds(self) -> Array:
         return self.base_scan.cartesian_bounds
 
     @property

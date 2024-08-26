@@ -4,7 +4,7 @@ the position, orientation, etc.
 
 from typing import Callable, Optional
 
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.module import Module
 
 identity_fn = lambda x: x  # Just return value as-is
@@ -20,7 +20,7 @@ class ElementGeometry(Module):
     additional dimension. For example, position may have the shape (64, 3) if there are
     64 elements (each with x, y, and z coordinates)."""
 
-    position: np.ndarray
+    position: Array
     theta: Optional[float] = None
     phi: Optional[float] = None
     sub_elements: Optional["ElementGeometry"] = None
@@ -38,8 +38,8 @@ class ElementGeometry(Module):
         >>> element_geometry[1]
         ElementGeometry(position=array([1, 1, 1]), theta=1, phi=1, sub_elements=None)
         """
-        _maybe_getitem = (
-            lambda attr: attr.__getitem__(*args) if attr is not None else None
+        _maybe_getitem = lambda attr: (
+            attr.__getitem__(*args) if attr is not None else None
         )
         return ElementGeometry(
             _maybe_getitem(self.position),
@@ -60,7 +60,7 @@ class ElementGeometry(Module):
     def with_updates_to(
         self,
         *,
-        position: Callable[[np.ndarray], np.ndarray] = identity_fn,
+        position: Callable[[Array], Array] = identity_fn,
         theta: Callable[[float], float] = identity_fn,
         phi: Callable[[float], float] = identity_fn,
         sub_elements: Callable[["ElementGeometry"], "ElementGeometry"] = identity_fn,
@@ -83,12 +83,16 @@ class ElementGeometry(Module):
             position=position(self.position) if callable(position) else position,
             theta=theta(self.theta) if callable(theta) else theta,
             phi=phi(self.phi) if callable(phi) else phi,
-            sub_elements=sub_elements(self.sub_elements)
-            if callable(sub_elements)
-            else sub_elements,
-            parent_element=parent_element(self.parent_element)
-            if callable(parent_element)
-            else parent_element,
+            sub_elements=(
+                sub_elements(self.sub_elements)
+                if callable(sub_elements)
+                else sub_elements
+            ),
+            parent_element=(
+                parent_element(self.parent_element)
+                if callable(parent_element)
+                else parent_element
+            ),
         )
 
     def copy(self) -> "ElementGeometry":

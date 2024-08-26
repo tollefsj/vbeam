@@ -1,13 +1,15 @@
 from vbeam.core import ElementGeometry, TransmittedWavefront, WaveData
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.wavefront.plane import PlaneWavefront
 
 
 class FocusedSphericalWavefront(TransmittedWavefront):
+
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> float:
         sender_source_dist = np.sqrt(np.sum((sender.position - wave_data.source) ** 2))
@@ -23,7 +25,7 @@ class FocusedHybridWavefront(TransmittedWavefront):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> float:
         spherical_wavefront = FocusedSphericalWavefront()

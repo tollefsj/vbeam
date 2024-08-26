@@ -1,5 +1,6 @@
-from typing import Callable, Optional, Tuple, Union, overload
+from typing import Callable, Literal, Optional, Tuple, Union, overload
 
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.scan.base import CoordinateSystem, Scan
 from vbeam.scan.util import parse_axes, polar_bounds_to_cartesian_bounds, scan_convert
@@ -9,12 +10,12 @@ from vbeam.util.coordinate_systems import as_cartesian
 
 
 class SectorScan(Scan):
-    azimuths: np.ndarray
-    elevations: Optional[np.ndarray]  # May be None for 2D scans
-    depths: np.ndarray
-    apex: np.ndarray
+    azimuths: Array
+    elevations: Optional[Array]  # May be None for 2D scans
+    depths: Array
+    apex: Array
 
-    def get_points(self, flatten: bool = True) -> np.ndarray:
+    def get_points(self, flatten: bool = True) -> Array:
         polar_axis = self.elevations if self.is_3d else np.array([0.0])
         points = grid(self.azimuths, polar_axis, self.depths, shape=(*self.shape, 3))
         points = as_cartesian(points)
@@ -32,10 +33,10 @@ class SectorScan(Scan):
     def replace(
         self,
         # "unchanged" means that the axis will not be changed.
-        azimuths: Union[np.ndarray, None, Literal["unchanged"]] = "unchanged",
-        elevations: Union[np.ndarray, None, Literal["unchanged"]] = "unchanged",
-        depths: Union[np.ndarray, None, Literal["unchanged"]] = "unchanged",
-        apex: Union[np.ndarray, None, Literal["unchanged"]] = "unchanged",
+        azimuths: Union[Array, None, Literal["unchanged"]] = "unchanged",
+        elevations: Union[Array, None, Literal["unchanged"]] = "unchanged",
+        depths: Union[Array, None, Literal["unchanged"]] = "unchanged",
+        apex: Union[Array, None, Literal["unchanged"]] = "unchanged",
     ) -> "SectorScan":
         return SectorScan(
             azimuths=azimuths if azimuths != "unchanged" else self.azimuths,
@@ -46,10 +47,10 @@ class SectorScan(Scan):
 
     def update(
         self,
-        azimuths: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        elevations: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        depths: Optional[Callable[[np.ndarray], np.ndarray]] = None,
-        apex: Optional[Callable[[np.ndarray], np.ndarray]] = None,
+        azimuths: Optional[Callable[[Array], Array]] = None,
+        elevations: Optional[Callable[[Array], Array]] = None,
+        depths: Optional[Callable[[Array], Array]] = None,
+        apex: Optional[Callable[[Array], Array]] = None,
     ) -> "SectorScan":
         return self.replace(
             azimuths(self.azimuths) if azimuths is not None else "unchanged",
@@ -87,7 +88,7 @@ class SectorScan(Scan):
         )
 
     @property
-    def axes(self) -> Tuple[np.ndarray, ...]:
+    def axes(self) -> Tuple[Array, ...]:
         if self.elevations is not None:
             return self.azimuths, self.elevations, self.depths
         else:
@@ -107,15 +108,20 @@ class SectorScan(Scan):
     @_deprecations.renamed_kwargs("1.0.5", imaged_points="image")
     def scan_convert(
         self,
-        image: np.ndarray,
+        image: Array,
         azimuth_axis: int = -2,
         depth_axis: int = -1,
         *,  # Remaining args must be passed by name (to avoid confusion)
         shape: Optional[Tuple[int, int]] = None,
-        default_value: Optional[np.ndarray] = 0.0,
+        default_value: Optional[Array] = 0.0,
     ):
         return scan_convert(
-            image, self, azimuth_axis, depth_axis, shape=shape, default_value=default_value
+            image,
+            self,
+            azimuth_axis,
+            depth_axis,
+            shape=shape,
+            default_value=default_value,
         )
 
     @property
@@ -128,22 +134,22 @@ class SectorScan(Scan):
 
 @overload
 def sector_scan(
-    azimuths: np.ndarray,
-    depths: np.ndarray,
-    apex: Union[np.ndarray, float] = 0.0,
+    azimuths: Array,
+    depths: Array,
+    apex: Union[Array, float] = 0.0,
 ) -> SectorScan: ...  # 2D scan
 
 
 @overload
 def sector_scan(
-    azimuths: np.ndarray,
-    elevations: np.ndarray,
-    depths: np.ndarray,
-    apex: Union[np.ndarray, float] = 0.0,
+    azimuths: Array,
+    elevations: Array,
+    depths: Array,
+    apex: Union[Array, float] = 0.0,
 ) -> SectorScan: ...  # 3D scan
 
 
-def sector_scan(*axes: np.ndarray, apex: Union[np.ndarray, float] = 0.0) -> SectorScan:
+def sector_scan(*axes: Array, apex: Union[Array, float] = 0.0) -> SectorScan:
     "Construct a sector scan. See SectorScan documentation for more details."
     azimuths, elevations, depths = parse_axes(axes)
     return SectorScan(azimuths, elevations, depths, np.array(apex))

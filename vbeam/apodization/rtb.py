@@ -2,6 +2,7 @@ from typing import Optional, Tuple
 
 from vbeam.apodization.window import Window
 from vbeam.core import Apodization, ElementGeometry, WaveData
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.module import field
 from vbeam.util import ensure_2d_point
@@ -9,10 +10,10 @@ from vbeam.util.geometry.v2 import Line, distance
 
 
 def rtb_apodization(
-    point: np.ndarray,
-    array_left: np.ndarray,
-    array_right: np.ndarray,
-    focus_point: np.ndarray,
+    point: Array,
+    array_left: Array,
+    array_right: Array,
+    focus_point: Array,
     minimum_aperture: float,
     maximum_aperture: Optional[float] = None,
     window: Optional[Window] = None,
@@ -78,7 +79,7 @@ def rtb_apodization(
 
 
 class RTBApodization(Apodization):
-    array_bounds: Optional[Tuple[np.ndarray, np.ndarray]] = None
+    array_bounds: Optional[Tuple[Array, Array]] = None
     array_width: Optional[float] = None
     minimum_aperture: float = 0.001  # TODO: Calculate this based on F# and wavelength
     maximum_aperture: Optional[float] = None
@@ -92,7 +93,7 @@ class RTBApodization(Apodization):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:
@@ -123,7 +124,7 @@ class SteppingApertureRTBApodization(Apodization):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:

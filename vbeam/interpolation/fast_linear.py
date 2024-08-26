@@ -1,6 +1,7 @@
 from typing import Tuple
 
 from vbeam.core import InterpolationSpace1D
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.util import ensure_positive_index
 
@@ -16,14 +17,14 @@ class FastInterpLinspace(InterpolationSpace1D):
     n: int
 
     @staticmethod
-    def from_array(arr: np.ndarray) -> "FastInterpLinspace":
+    def from_array(arr: Array) -> "FastInterpLinspace":
         # Assumes that arr was created as a linspace.
         return FastInterpLinspace(arr[0], arr[1] - arr[0], len(arr))
 
-    def to_array(self) -> np.ndarray:
+    def to_array(self) -> Array:
         return np.linspace(self.min, self.min + self.d * self.n, self.n)
 
-    def interp1d_indices(self, x: np.ndarray) -> Tuple[float, int, int, float, float]:
+    def interp1d_indices(self, x: Array) -> Tuple[float, int, int, float, float]:
         """Return a tuple of 5 elements with information about how to interpolate the
         array.
 
@@ -58,11 +59,11 @@ class FastInterpLinspace(InterpolationSpace1D):
 
     def interp1d(
         self,
-        x: np.ndarray,
-        fp: np.ndarray,
+        x: Array,
+        fp: Array,
         left: int = 0,
         right: int = 0,
-    ) -> np.ndarray:
+    ) -> Array:
         bounds_flag, clipped_i1, clipped_i2, p1, p2 = self.interp1d_indices(x)
         bounds_flag = np.expand_dims(bounds_flag, tuple(range(1, fp.ndim)))
         p1 = np.expand_dims(p1, tuple(range(1, fp.ndim)))
@@ -86,17 +87,17 @@ class FastInterpLinspace(InterpolationSpace1D):
 
     @staticmethod
     def interp2d(
-        x: np.ndarray,
-        y: np.ndarray,
+        x: Array,
+        y: Array,
         xp: "FastInterpLinspace",
         yp: "FastInterpLinspace",
-        z: np.ndarray,
+        z: Array,
         azimuth_axis: int = 0,
         depth_axis: int = 1,
         *,  # Remaining args must be passed by name (to avoid confusion)
         edge_handling: str = "Value",
         default_value: float = 0.0,
-    ) -> np.ndarray:
+    ) -> Array:
         # Ensure that the axes are positive numbers
         azimuth_axis = ensure_positive_index(z.ndim, azimuth_axis)
         depth_axis = ensure_positive_index(z.ndim, depth_axis)
@@ -122,14 +123,16 @@ class FastInterpLinspace(InterpolationSpace1D):
         px1, px2, py1, py2 = [broadcastable(p) for p in [px1, px2, py1, py2]]
         bounds_flag_x = broadcastable(bounds_flag_x)
         bounds_flag_y = broadcastable(bounds_flag_y)
-        
+
         v0 = z[clipped_xi1, clipped_yi1] * px1 + z[clipped_xi2, clipped_yi1] * px2
         v1 = z[clipped_xi1, clipped_yi2] * px1 + z[clipped_xi2, clipped_yi2] * px2
         v = v0 * py1 + v1 * py2
-        if edge_handling=="Value":
-            v = np.where(np.logical_or(bounds_flag_x != 0, bounds_flag_y != 0), default_value, v)
-        elif edge_handling=="Nearest":
-            pass # No need to do anything, as the interpolation will choose the nearest value
+        if edge_handling == "Value":
+            v = np.where(
+                np.logical_or(bounds_flag_x != 0, bounds_flag_y != 0), default_value, v
+            )
+        elif edge_handling == "Nearest":
+            pass  # No need to do anything, as the interpolation will choose the nearest value
         else:
             raise ValueError("Only Value and Nearest edge handling is implemented")
 

@@ -1,7 +1,7 @@
 from typing import Optional
 
 from vbeam.core import Apodization, ElementGeometry, WaveData
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 
 
 class TxRxApodization(Apodization):
@@ -14,7 +14,7 @@ class TxRxApodization(Apodization):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:

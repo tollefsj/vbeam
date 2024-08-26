@@ -6,9 +6,9 @@ Wavefront models return a distance in meters. This way they are decoupled from t
 speed of sound of the medium."""
 
 from abc import abstractmethod
-from dataclasses import dataclass
 from typing import Callable, Union
 
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.module import Module
 from vbeam.util.geometry.v2 import distance
@@ -62,7 +62,7 @@ class TransmittedWavefront(Module):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         wave_data: WaveData,
     ) -> Union[float, "MultipleTransmitDistances"]:
         """Return the *distance (in meters)* from the sender element to the point for a transmit.
@@ -86,7 +86,7 @@ class ReflectedWavefront(Module):
         :class:`TransmittedWavefront`
         :func:`~vbeam.core.kernels.signal_for_point`"""
 
-    def __call__(self, point_position: np.ndarray, receiver: ElementGeometry) -> float:
+    def __call__(self, point_position: Array, receiver: ElementGeometry) -> float:
         return distance(point_position, receiver.position)
 
 
@@ -106,8 +106,8 @@ class MultipleTransmitDistances(Module):
     will apply them to the :attr:`values` attribute as if it was just a numpy array.
 
     Attributes:
-        values (np.ndarray): The distance values that will be used to delay the element signals.
-        aggregate_samples (Callable[[np.ndarray, np.ndarray], np.ndarray]): A function
+        values (Array): The distance values that will be used to delay the element signals.
+        aggregate_samples (Callable[[Array, Array], Array]): A function
             that will be used to combine the delayed samples into one value, for
             example as a weighted sum. If None, the samples will be averaged.
 
@@ -116,8 +116,8 @@ class MultipleTransmitDistances(Module):
         :class:`TransmittedWavefront`
     """
 
-    values: np.ndarray
-    aggregate_samples: Callable[[np.ndarray, np.ndarray], np.ndarray] = None
+    values: Array
+    aggregate_samples: Callable[[Array, Array], Array] = None
 
     def __post_init__(self):
         # If no aggregate function is set, just average the samples
@@ -126,8 +126,8 @@ class MultipleTransmitDistances(Module):
 
     # Mathematical operators applied to the :class:`MultipleTransmitDistances` object
     # will apply them to the ``values`` attribute as if it was just a numpy array.
-    def __truediv__(self, other) -> np.ndarray:
+    def __truediv__(self, other) -> Array:
         return self.values / other
 
-    def __add__(self, other) -> np.ndarray:
+    def __add__(self, other) -> Array:
         return self.values + other

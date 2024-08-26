@@ -2,7 +2,7 @@
 
 from abc import abstractmethod
 
-from vbeam.fastmath import numpy as np
+from vbeam.fastmath import Array
 from vbeam.module import Module
 
 from .element_geometry import ElementGeometry
@@ -14,7 +14,7 @@ class Apodization(Module):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:

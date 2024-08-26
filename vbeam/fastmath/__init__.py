@@ -41,6 +41,7 @@ from vbeam.fastmath.included_backends import (
     get_best_available_backend,
     included_backends,
 )
+from vbeam.fastmath.typing import Array as Array
 
 _registered_backends: Dict[str, Callable[[], Backend]] = included_backends
 

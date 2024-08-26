@@ -1,3 +1,4 @@
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.module import Module
 
@@ -14,7 +15,7 @@ class Line(Module):
     c: float
 
     @staticmethod
-    def passing_through(point1: np.ndarray, point2: np.ndarray) -> "Line":
+    def passing_through(point1: Array, point2: Array) -> "Line":
         "Construct a line that passes through both point1 and point2."
         x1, y1, z1 = point1
         x2, y2, z2 = point2
@@ -24,13 +25,13 @@ class Line(Module):
         return Line(a, b, c)
 
     @staticmethod
-    def from_anchor_and_angle(anchor: np.ndarray, angle: float) -> "Line":
+    def from_anchor_and_angle(anchor: Array, angle: float) -> "Line":
         "Construct a line that passes through the anchor and has the given angle."
         return Line.passing_through(
             anchor, anchor + np.array([np.cos(angle), 0, np.sin(angle)])
         )
 
-    def intersection(l1: "Line", l2: "Line") -> np.ndarray:
+    def intersection(l1: "Line", l2: "Line") -> Array:
         "Return the point where the lines l1 and l2 intersect."
         x = (l1.b * l2.c - l2.b * l1.c) / (l1.a * l2.b - l2.a * l1.b)
         z = (l2.a * l1.c - l1.a * l2.c) / (l1.a * l2.b - l2.a * l1.b)
@@ -41,7 +42,7 @@ class Line(Module):
         "The angle of the line."
         return np.arctan2(self.b, self.a)
 
-    def signed_distance(self, point: np.ndarray) -> float:
+    def signed_distance(self, point: Array) -> float:
         """Return the signed distance between the point and the nearest point on the
         line.
 

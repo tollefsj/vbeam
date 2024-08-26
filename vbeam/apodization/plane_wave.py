@@ -1,6 +1,7 @@
 from typing import Optional, Tuple, Union
 
 from vbeam.core import Apodization, ElementGeometry, WaveData
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.util import ensure_2d_point
 from vbeam.util.geometry.v2 import Line, distance
@@ -9,13 +10,13 @@ from .window import Window
 
 
 class PlaneWaveTransmitApodization(Apodization):
-    array_bounds: Tuple[np.ndarray, np.ndarray]
+    array_bounds: Tuple[Array, Array]
     window: Optional[Window] = None
 
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:
@@ -70,7 +71,7 @@ class PlaneWaveReceiveApodization(Apodization):
     def __call__(
         self,
         sender: ElementGeometry,
-        point_position: np.ndarray,
+        point_position: Array,
         receiver: ElementGeometry,
         wave_data: WaveData,
     ) -> float:

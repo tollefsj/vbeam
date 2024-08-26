@@ -3,8 +3,8 @@ from typing import List, Literal, Optional, Tuple, Union
 import numpy
 import pyuff_ustb as pyuff
 from scipy.signal import hilbert
-from spekk import Spec
 
+from spekk import Spec
 from vbeam.apodization import (
     Hamming,
     NoApodization,
@@ -15,6 +15,7 @@ from vbeam.apodization import (
 )
 from vbeam.core import ElementGeometry, WaveData
 from vbeam.data_importers.setup import SignalForPointSetup
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.interpolation import FastInterpLinspace
 from vbeam.scan import Scan, linear_scan, sector_scan
@@ -185,7 +186,7 @@ given {all_wavefronts})."
     )
 
 
-def parse_beamformed_data(beamformed_data: pyuff.BeamformedData) -> np.ndarray:
+def parse_beamformed_data(beamformed_data: pyuff.BeamformedData) -> Array:
     "Parse the beamformed data from a PyUFF file into an array with the correct shape."
     imaged_points = np.squeeze(beamformed_data.data)
     scan = parse_pyuff_scan(beamformed_data.scan)

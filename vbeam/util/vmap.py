@@ -1,9 +1,8 @@
-from dataclasses import dataclass
 from functools import partial
 from typing import Callable, Optional, Sequence, Union
 
 from spekk import Spec
-
+from vbeam.fastmath import Array
 from vbeam.fastmath import numpy as np
 from vbeam.util.transformations import *
 
@@ -22,7 +21,7 @@ def vmap_all_except(f: Union[Callable, int], axis: Optional[int] = None):
             raise ValueError("axis must be an int when using @vmap_all_except().")
         return partial(vmap_all_except, axis=f)
 
-    def wrapped(x: np.ndarray):
+    def wrapped(x: Array):
         if x.ndim == 1:
             return f(x)
 
@@ -55,11 +54,11 @@ def vmap_all_except(f: Union[Callable, int], axis: Optional[int] = None):
 
 
 def apply_binary_operation_across_axes(
-    a: np.ndarray,
-    b: np.ndarray,
-    binary_operation: Callable[[np.ndarray, np.ndarray], np.ndarray],
+    a: Array,
+    b: Array,
+    binary_operation: Callable[[Array, Array], Array],
     axes: Sequence[int],
-) -> np.ndarray:
+) -> Array:
     """Apply a binary operation to two arrays, where the second array is potentially
     broadcasted and transposed to match the shape and axis-ordering of the first array.
 

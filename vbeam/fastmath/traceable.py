@@ -10,6 +10,7 @@ A (long, but illustrative) example:
 >>> from abc import ABC, abstractmethod
 >>> from vbeam.fastmath import numpy as np, backend_manager
 >>> from vbeam.fastmath.traceable import traceable, traceable_dataclass
+>>> from vbeam.fastmath import Array
 >>> import tensorflow as tf
 >>> class MyABC(ABC):
 ...     @abstractmethod
@@ -18,7 +19,7 @@ A (long, but illustrative) example:
 ...
 >>> @traceable_dataclass(data_fields=["a"])
 ... class Item(MyABC):
-...     a: traceable(np.ndarray) = 1.0  # Note: wrapping np.ndarray with traceable is actually unneccesary because it is already wrapped in the backends.
+...     a: traceable(Array) = 1.0  # Note: wrapping Array with traceable is actually unneccesary because it is already wrapped in the backends.
 ...     def do_thing(self):
 ...         return 2.0
 ...
@@ -73,10 +74,11 @@ def traceable_dataclass(data_fields=(), aux_fields=()):
       traceable dataclasses.
 
     Example:
+    >>> from vbeam.fastmath import Array
     >>> @traceable_dataclass(data_fields=["a"])
     ... # `Item` can now be understood by backends
     ... class Item:
-    ...     a: np.ndarray = 1.0
+    ...     a: Array = 1.0
     """
 
     def as_traceable_dataclass_inner(cls):
