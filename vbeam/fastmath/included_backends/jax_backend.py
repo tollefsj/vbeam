@@ -7,6 +7,7 @@ import jax
 import jax.numpy as jnp
 
 from vbeam.fastmath.backend import Backend
+from vbeam.util._deprecations import deprecated
 
 if TYPE_CHECKING:
     from vbeam.module import Module
@@ -15,7 +16,9 @@ _already_traceable = set()
 
 
 class JaxBackend(Backend):
+
     @property
+    @deprecated("1.0.6", "Use fastmath.typing.Array for type hinting arrays.")
     def ndarray(self):
         return jnp.ndarray
 

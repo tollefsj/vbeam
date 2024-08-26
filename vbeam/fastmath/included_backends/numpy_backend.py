@@ -9,13 +9,16 @@ from vbeam.fastmath.traceable import (
     get_traceable_data_fields,
     is_traceable_dataclass,
 )
+from vbeam.util._deprecations import deprecated
 
 if TYPE_CHECKING:
     from vbeam.module import Module
 
 
 class NumpyBackend(Backend):
+
     @property
+    @deprecated("1.0.6", "Use fastmath.typing.Array for type hinting arrays.")
     def ndarray(self):
         return np.ndarray
 

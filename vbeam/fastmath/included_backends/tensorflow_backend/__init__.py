@@ -10,6 +10,7 @@ from tensorflow.python.util import nest
 from vbeam.fastmath.backend import Backend
 from vbeam.fastmath.included_backends.tensorflow_backend.vmap import vmap
 from vbeam.fastmath.traceable import is_traceable, is_traceable_dataclass
+from vbeam.util._deprecations import deprecated
 
 # Enable NumPy behavior on Tensors.
 tnp.experimental_enable_numpy_behavior()
@@ -50,7 +51,9 @@ def make_type_work_with_tensorflow(T):
 
 
 class TensorflowBackend(Backend):
+
     @property
+    @deprecated("1.0.6", "Use fastmath.typing.Array for type hinting arrays.")
     def ndarray(self):
         return tnp.ndarray
 
