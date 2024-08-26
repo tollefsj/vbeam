@@ -1,5 +1,5 @@
 from functools import reduce
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import tensorflow as tf
 
@@ -14,6 +14,9 @@ from vbeam.fastmath.traceable import is_traceable, is_traceable_dataclass
 # Enable NumPy behavior on Tensors.
 tnp.experimental_enable_numpy_behavior()
 _traceable_classes_cache = {}
+
+if TYPE_CHECKING:
+    from vbeam.module import Module
 
 
 def swap_axes(t: tf.Tensor, ax1: int, ax2: int):
@@ -339,3 +342,6 @@ static_argnames"
         # Overwrite the original class
         object.__setattr__(obj, "__class__", _traceable_classes_cache[original_class])
         return obj
+
+    def make_traceable(self, cls: "Module"):
+        raise NotImplementedError()

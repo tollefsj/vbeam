@@ -1,10 +1,13 @@
 from functools import wraps
-from typing import Callable, Sequence, Type, TypeVar, Union
+from typing import TYPE_CHECKING, Callable, Sequence, Type, TypeVar, Union
 
 import numpy as np
 
 T_carry = TypeVar("T_carry")
 T_x = TypeVar("T_x")
+
+if TYPE_CHECKING:
+    from vbeam.module import Module
 
 
 def i_at(arr, i, ax):
@@ -101,7 +104,7 @@ class Backend:
     @wraps(np.min)
     def min(self, a, axis=None):
         raise NotImplementedError
-    
+
     @wraps(np.minimum)
     def minimum(self, a, b):
         raise NotImplementedError
@@ -109,7 +112,7 @@ class Backend:
     @wraps(np.max)
     def max(self, a, axis=None):
         raise NotImplementedError
-    
+
     @wraps(np.maximum)
     def maximum(self, a, b):
         raise NotImplementedError
@@ -362,6 +365,9 @@ class Backend:
         Returns:
           obj, wrapped/modified.
         """
+        raise NotImplementedError
+
+    def make_traceable(self, cls: "Module"):
         raise NotImplementedError
 
     ######################

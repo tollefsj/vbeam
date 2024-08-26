@@ -1,10 +1,15 @@
+import dataclasses
 import warnings
 from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Dict, Tuple, Type
 
 import jax
 import jax.numpy as jnp
 
 from vbeam.fastmath.backend import Backend
+
+if TYPE_CHECKING:
+    from vbeam.module import Module
 
 _already_traceable = set()
 
@@ -65,13 +70,13 @@ class JaxBackend(Backend):
 
     def min(self, a, axis=None):
         return jnp.min(a, axis=axis)
-    
+
     def minimum(self, a, b):
         return jnp.minimum(a, b)
 
     def max(self, a, axis=None):
         return jnp.max(a, axis=axis)
-    
+
     def maximum(self, a, b):
         return jnp.maximum(a, b)
 
@@ -255,3 +260,49 @@ class JaxBackend(Backend):
         as_dataclass = dataclass(cls)  # Make it a dataclass as well.
         original_obj.__class__ = as_dataclass
         return original_obj
+
+    def make_traceable(self, cls: Type["Module"]):
+        if cls not in _already_traceable:
+
+            @dataclasses.dataclass()
+            class _FlattenedData:
+                dynamic_field_names: Tuple[str]
+                static_fields: Dict[str, Any]
+
+                def __repr__(self):
+                    x = (self.dynamic_field_names, self.static_fields)
+                    return repr(x)[1:-1]
+
+            def flatten(module: "Module"):
+                dynamic_fields = {}
+                static_fields = {}
+                for field_ in dataclasses.fields(module):
+                    name = field_.name
+                    try:
+                        # Not `getattr` so that we don't pick up `property`s.
+                        value = module.__dict__[name]
+                    except KeyError:
+                        # Uninitialised values during `__init__`, or when `property`s overwrite a
+                        # field.
+                        continue
+                    if field_.metadata.get("static", False):
+                        static_fields[name] = value
+                    else:
+                        dynamic_fields[name] = (jax.tree_util.GetAttrKey(name), value)
+                aux = _FlattenedData(tuple(dynamic_fields.keys()), static_fields)
+                return tuple(dynamic_fields.values()), aux
+
+            def unflatten(aux: _FlattenedData, values: tuple) -> "Module":
+                dynamic_fields = {
+                    name: value for name, value in zip(aux.dynamic_field_names, values)
+                }
+                return cls(**dynamic_fields, **aux.static_fields)
+
+            try:
+                # May throw ValueError if this module got reloaded and
+                # _already_traceable got reset.
+                jax.tree_util.register_pytree_with_keys(cls, flatten, unflatten)
+            except ValueError:
+                pass
+            finally:
+                _already_traceable.add(cls)  # Don't register it again.

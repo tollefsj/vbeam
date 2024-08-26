@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 import numpy as np
 
@@ -8,6 +9,9 @@ from vbeam.fastmath.traceable import (
     get_traceable_data_fields,
     is_traceable_dataclass,
 )
+
+if TYPE_CHECKING:
+    from vbeam.module import Module
 
 
 class NumpyBackend(Backend):
@@ -66,13 +70,13 @@ class NumpyBackend(Backend):
 
     def min(self, a, axis=None):
         return np.min(a, axis=axis)
-    
+
     def minimum(self, a, b):
         return np.minimum(a, b)
-    
+
     def max(self, a, axis=None):
         return np.max(a, axis=axis)
-    
+
     def maximum(self, a, b):
         return np.minimum(a, b)
 
@@ -96,7 +100,7 @@ class NumpyBackend(Backend):
 
     def mean(self, a, axis=None):
         return np.mean(a, axis=axis)
-    
+
     def median(self, a, axis=None):
         return np.median(a, axis=axis)
 
@@ -123,7 +127,7 @@ class NumpyBackend(Backend):
 
     def array(self, x, dtype=None):
         return np.array(x, dtype=dtype)
-    
+
     def flip(self, a, axis=None):
         return np.flip(a, axis=axis)
 
@@ -248,6 +252,9 @@ class NumpyBackend(Backend):
         as_dataclass = dataclass(type(obj))  # Make it a dataclass, though.
         obj.__class__ = as_dataclass
         return obj
+
+    def make_traceable(self, cls: "Module"):
+        return cls  # Noop
 
 
 def _set_out_axes(result: np.ndarray, out_axis: int):
