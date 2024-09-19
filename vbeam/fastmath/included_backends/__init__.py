@@ -16,6 +16,12 @@ def get_jax_backend():
     return JaxBackend()
 
 
+def get_torch_backend():
+    from .torch_backend import TorchBackend
+
+    return TorchBackend()
+
+
 def get_tensorflow_backend():
     from .tensorflow_backend import TensorflowBackend
 
@@ -25,9 +31,10 @@ def get_tensorflow_backend():
 included_backends = {
     "numpy": get_numpy_backend,
     "jax": get_jax_backend,
+    "torch": get_torch_backend,
     "tensorflow": get_tensorflow_backend,
 }
-backend_priority = ["jax", "numpy"]
+backend_priority = ["jax", "torch", "numpy"]
 
 
 def get_best_available_backend():
