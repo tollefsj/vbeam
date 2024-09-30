@@ -105,8 +105,12 @@ class FastInterpLinspace(InterpolationSpace1D):
         if depth_axis == 0 and azimuth_axis == 1:
             z = np.swapaxes(z, azimuth_axis, depth_axis)
         else:
-            z = np.moveaxis(z, azimuth_axis, 0)
-            z = np.moveaxis(z, depth_axis, 1)
+            if azimuth_axis > depth_axis: # need to check of the order of depth and azimuth
+                z = np.moveaxis(z, azimuth_axis, 0)
+                z = np.moveaxis(z, depth_axis+1, 1)
+            else:
+                z = np.moveaxis(z, azimuth_axis, 0)
+                z = np.moveaxis(z, depth_axis, 1)
 
         # Interpolate along the axes
         bounds_flag_x, clipped_xi1, clipped_xi2, px1, px2 = xp.interp1d_indices(x)
@@ -137,8 +141,12 @@ class FastInterpLinspace(InterpolationSpace1D):
         if depth_axis == 0 and azimuth_axis == 1:
             v = np.swapaxes(v, azimuth_axis, depth_axis)
         elif v.ndim >= 2:
-            v = np.moveaxis(v, 1, depth_axis)
-            v = np.moveaxis(v, 0, azimuth_axis)
+            if azimuth_axis > depth_axis: # need to check of the order of depth and azimuth
+                v = np.moveaxis(v, 0, azimuth_axis)
+                v = np.moveaxis(v, 0, depth_axis)
+            else:
+                v = np.moveaxis(v, 1, depth_axis)
+                v = np.moveaxis(v, 0, azimuth_axis)
         return v
 
     @property
