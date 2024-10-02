@@ -37,31 +37,41 @@ def ensure_tensors(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
         args = [
+            # TensorWrapper(torch.from_numpy(arg)) if isinstance(arg, np.ndarray) else arg
             torch.from_numpy(arg) if isinstance(arg, np.ndarray) else arg
             for arg in args
         ]
         kwargs = {
+            # k: TensorWrapper(torch.from_numpy(v)) if isinstance(v, np.ndarray) else v
             k: torch.from_numpy(v) if isinstance(v, np.ndarray) else v
             for k, v in kwargs.items()
         }
-        return f(*args, **kwargs)
-    
+        return TensorWrapper(f(*args, **kwargs))
+
     return wrapped
+
+class TensorWrapper(torch.Tensor):
+    # def __init__(self, tensor: torch.tensor):
+        # a = 1
+        # self.
+    def astype(self, dtype):
+        return self.type(dtype)
 
 class TorchBackend(Backend):
     @property
     def ndarray(self):
-        return torch.Tensor
+        return TensorWrapper
+        # return torch.Tensor
 
-
-    def zeros(self, shape, dtype=None, device='cpu'):
+    def zeros(self, shape, dtype=None):
+        # return torch.from_numpy(np.zeros(shape, dtype))
         if isinstance(shape, int):
-            return torch.zeros(shape, dtype=dtype, device=device)
+            return TensorWrapper(torch.zeros(shape, dtype=dtype))
         else:
-            return torch.zeros(*shape, dtype=dtype, device=device)
+            return TensorWrapper(torch.zeros(*shape, dtype=dtype))
 
-    def ones(self, shape, dtype=None, device='cpu'):
-        return torch.ones(*shape, dtype=dtype, device=device)
+    def ones(self, shape, dtype=None):
+        return TensorWrapper(torch.from_numpy(np.ones(shape, dtype)))
 
     @property
     def pi(self):
@@ -108,10 +118,6 @@ class TorchBackend(Backend):
         return torch.float64   
 
     @property
-    def complex32(self):
-        return torch.complex32
-
-    @property
     def complex64(self):
         return torch.complex64   
     
@@ -119,49 +125,45 @@ class TorchBackend(Backend):
     def complex128(self):
         return torch.complex128      
 
-    @ensure_tensors
-    def to_dtype(self, x, dtype):
-        return x.type(dtype)
+    # @ensure_tensors
+    # def int32(self, x):
+    #     return x.type(torch.int32)
+    
+    # @ensure_tensors
+    # def int64(self, x):
+    #     return x.type(torch.int64)
+    
+    # @ensure_tensors
+    # def uint8(self, x):
+    #     return x.type(torch.uint8)
 
-    @ensure_tensors
-    def to_int32(self, x):
-        return x.type(torch.int32)
+    # @ensure_tensors
+    # def uint16(self, x):
+    #     return x.type(torch.uint16)
     
-    @ensure_tensors
-    def to_int64(self, x):
-        return x.type(torch.int64)
+    # @ensure_tensors
+    # def uint32(self, x):
+    #     return x.type(torch.uint32) 
     
-    @ensure_tensors
-    def to_uint8(self, x):
-        return x.type(torch.uint8)
-
-    @ensure_tensors
-    def to_uint16(self, x):
-        return x.type(torch.uint16)
-    
-    @ensure_tensors
-    def to_uint32(self, x):
-        return x.type(torch.uint32) 
-    
-    @ensure_tensors
-    def to_uint64(self, x):
-        return x.type(torch.uint64)  
+    # @ensure_tensors
+    # def uint64(self, x):
+    #     return x.type(torch.uint64)  
           
-    @ensure_tensors
-    def to_float32(self, x):
-        return x.type(torch.float32) 
+    # @ensure_tensors
+    # def float32(self, x):
+    #     return x.type(torch.float32) 
     
-    @ensure_tensors
-    def to_float64(self, x):
-        return x.type(torch.float64) 
+    # @ensure_tensors
+    # def float64(self, x):
+    #     return x.type(torch.float64) 
       
-    @ensure_tensors
-    def to_complex64(self, x):
-        return x.type(torch.complex64)
+    # @ensure_tensors
+    # def complex64(self, x):
+    #     return x.type(torch.complex64) 
       
-    @ensure_tensors
-    def to_complex128(self, x):
-        return x.type(torch.complex128)        
+    # @ensure_tensors
+    # def complex128(self, x):
+    #     return x.type(torch.complex128)        
 
     @ensure_tensors
     def abs(self, x):
@@ -236,8 +238,8 @@ class TorchBackend(Backend):
     def minimum(self, a, b):
         # a =  a if isinstance(type(a), TensorWrapper) else torch.tensor(a)
         # b =  b if isinstance(type(b), TensorWrapper) else torch.tensor(b)
-        a =  a if isinstance(a, torch.Tensor) else torch.tensor(a)
-        b =  b if isinstance(b, torch.Tensor) else torch.tensor(b)
+        a =  a if isinstance(type(a), torch.Tensor) else torch.tensor(a)
+        b =  b if isinstance(type(b), vbeam.fastmath.included_backends.torch_backend.TensorWrapper) else torch.tensor(b)        
         return torch.minimum(a, b)
 
     @ensure_tensors
@@ -246,8 +248,8 @@ class TorchBackend(Backend):
 
     @ensure_tensors
     def maximum(self, a, b):
-        a =  a if isinstance(a, torch.Tensor) else torch.tensor(a)
-        b =  b if isinstance(b, torch.Tensor) else torch.tensor(b)    
+        a =  a if isinstance(type(a), TensorWrapper) else torch.tensor(a)
+        b =  b if isinstance(type(b), TensorWrapper) else torch.tensor(b)    
         return torch.maximum(a, b)
 
     @ensure_tensors
@@ -312,7 +314,6 @@ class TorchBackend(Backend):
     @ensure_tensors
     def flip(self, a, axis=None):
         dims = list(range(a.ndim)) if axis is None else axis
-        dims = (dims,) if isinstance(dims, int) else dims
         return torch.flip(a, dims=dims)
 
     @ensure_tensors
@@ -351,18 +352,8 @@ class TorchBackend(Backend):
 
     @ensure_tensors
     def expand_dims(self, a, axis):
-        if isinstance(axis, tuple):
-            if len(axis)==0:
-                return a
-            elif len(axis)==1:
-                return torch.unsqueeze(a, axis[0])
-            else:
-                for d in sorted(axis):
-                    a = torch.unsqueeze(a, d)
-                return a
-                # raise ValueError('PyTorch does not support an tuple with length larger than one')
         return call_without_none_dim_kwarg(torch.unsqueeze, a, dim=axis)
-    
+
     @ensure_tensors
     def ceil(self, x):
         return torch.ceil(x)
@@ -450,10 +441,6 @@ class TorchBackend(Backend):
     @ensure_tensors  
     def reshape(self, x, shape=None):
         return torch.reshape(x, shape=shape)  
-    
-    @ensure_tensors  
-    def view(self, x, shape=None):
-        return x.view(shape=shape)
 
     @ensure_tensors  
     def bitwise_and(self, x1, x2):
@@ -490,6 +477,7 @@ class TorchBackend(Backend):
         else:
             return torch.tensor(x, dtype=torch.float64)
         
+
     @ensure_tensors 
     def dot(self, x1, x2):
         return torch.matmul(x1, x2)  
@@ -506,30 +494,7 @@ class TorchBackend(Backend):
     @ensure_tensors 
     def from_numpy(self, x):
         return x
-    
-    def to_numpy(self, x):
-        return x.detach().cpu().numpy()
 
-    @ensure_tensors 
-    def to_device(self, x, device):    
-        return x.to(device)     
-
-    def get_activate_backend(self) -> str:
-        return 'torch'     
-    
-    def correlate2d(self, x1, x2):
-        # x2 = torch.flipud(torch.fliplr(x2))
-        a2 = torch.nn.functional.conv2d(x1[None, None, :,:], x2[None, None, :,:], padding=(10,10))[0,0]  
-        return a2
-
-    def correlate2d(self, x1, x2):
-        # x2 = torch.flipud(torch.fliplr(x2))
-        a2 = torch.nn.functional.conv2d(x1[None, None, :,:], x2[None, None, :,:], padding=(10,10))[0,0]  
-        return a2    
-
-    def angle(self, x):
-        return torch.angle(x)
-        
     class fft:
         @staticmethod
         @ensure_tensors 
@@ -572,4 +537,3 @@ class TorchBackend(Backend):
         # TODO: Make the class act like a PyTorch Module
         # Noop
         return cls
-

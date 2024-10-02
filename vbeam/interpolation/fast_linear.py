@@ -26,7 +26,7 @@ class FastInterpLinspace(InterpolationSpace1D):
     def interp1d_indices(self, x: np.ndarray) -> Tuple[float, int, int, float, float]:
         """Return a tuple of 5 elements with information about how to interpolate the
         array.
-
+        
         Returns a tuple of:
           0. bounds_flag: If 0, then x is within bounds. If -1, then x is outside of
                bounds on the left side. If 1, then x is out of bounds on the right side.
@@ -51,8 +51,10 @@ class FastInterpLinspace(InterpolationSpace1D):
         bounds_flag = 0
         bounds_flag = np.where(pseudo_index < 0, -1, bounds_flag)
         bounds_flag = np.where(pseudo_index > (self.n - 1), 1, bounds_flag)
-        clipped_i1 = np.clip(i_floor, 0, self.n - 1).astype("int32")
-        clipped_i2 = np.clip(i_floor + 1, 0, self.n - 1).astype("int32")
+        # clipped_i1 = np.clip(i_floor, 0, self.n - 1).astype("int32")
+        # clipped_i2 = np.clip(i_floor + 1, 0, self.n - 1).astype("int32")
+        clipped_i1 = np.to_int32(np.clip(i_floor, 0, self.n - 1))
+        clipped_i2 = np.to_int32(np.clip(i_floor + 1, 0, self.n - 1))
         p1, p2 = (1 - di), di
         return bounds_flag, clipped_i1, clipped_i2, p1, p2
 
@@ -97,6 +99,7 @@ class FastInterpLinspace(InterpolationSpace1D):
         edge_handling: str = "Value",
         default_value: float = 0.0,
     ) -> np.ndarray:
+
         # Ensure that the axes are positive numbers
         azimuth_axis = ensure_positive_index(z.ndim, azimuth_axis)
         depth_axis = ensure_positive_index(z.ndim, depth_axis)
@@ -126,9 +129,10 @@ class FastInterpLinspace(InterpolationSpace1D):
         px1, px2, py1, py2 = [broadcastable(p) for p in [px1, px2, py1, py2]]
         bounds_flag_x = broadcastable(bounds_flag_x)
         bounds_flag_y = broadcastable(bounds_flag_y)
-        
+
         v0 = z[clipped_xi1, clipped_yi1] * px1 + z[clipped_xi2, clipped_yi1] * px2
         v1 = z[clipped_xi1, clipped_yi2] * px1 + z[clipped_xi2, clipped_yi2] * px2
+
         v = v0 * py1 + v1 * py2
         if edge_handling=="Value":
             v = np.where(np.logical_or(bounds_flag_x != 0, bounds_flag_y != 0), default_value, v)

@@ -23,7 +23,7 @@ def i_at(arr, i, ax):
 
 class Backend:
     """An implementation of the operations needed by vbeam."""
-
+    
     @property
     @wraps(np.ndarray)
     def ndarray(self) -> Type[np.ndarray]:
@@ -277,6 +277,22 @@ class Backend:
     @wraps(np.shape)
     def shape(self, x):
         raise NotImplementedError
+    
+    @wraps(np.ascontiguousarray)
+    def ascontiguousarray(self, x):
+        raise NotImplementedError  
+
+    @wraps(np.conj)
+    def conj(self, x):
+        raise NotImplementedError  
+    
+    @wraps(np.real)
+    def real(self, x):
+        raise NotImplementedError      
+    
+    @wraps(np.imag)
+    def imag(self, x):
+        raise NotImplementedError            
 
     class add:
         @staticmethod

@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Tuple, Union, overload
+from typing import Callable, Optional, Tuple, Union, overload, Literal
 
 from vbeam.fastmath import numpy as np
 from vbeam.scan.base import CoordinateSystem, Scan
@@ -38,7 +38,8 @@ class SectorScan(Scan):
         apex: Union[np.ndarray, None, Literal["unchanged"]] = "unchanged",
     ) -> "SectorScan":
         return SectorScan(
-            azimuths=azimuths if azimuths != "unchanged" else self.azimuths,
+            # azimuths=azimuths if hasattr(azimuths, 'shape') and azimuths != "unchanged" else self.azimuths,
+            azimuths=azimuths if hasattr(azimuths, 'shape') or azimuths == None else self.azimuths,
             elevations=elevations if elevations != "unchanged" else self.elevations,
             depths=depths if depths != "unchanged" else self.depths,
             apex=apex if apex != "unchanged" else self.apex,
@@ -57,7 +58,7 @@ class SectorScan(Scan):
             depths(self.depths) if depths is not None else "unchanged",
             apex(self.apex) if apex is not None else "unchanged",
         )
-
+    
     def resize(
         self,
         azimuths: Optional[int] = None,
@@ -103,6 +104,21 @@ class SectorScan(Scan):
                 "Please create an issue on Github if this is something you need.",
             )
         return polar_bounds_to_cartesian_bounds(self.bounds)
+    
+    # @property
+    def cartesian_axes(self, shape) -> Tuple[np.ndarray, np.ndarray]:
+        """Get the azimuth and depth vectos of the scan in cartesian coordinates."""
+        if self.is_3d:
+            raise NotImplementedError(
+                "Cartesian bounds are not implemented for 3D scans yet.",
+                "Please create an issue on Github if this is something you need.",
+            )
+        
+        min_x, max_x, min_z, max_z = polar_bounds_to_cartesian_bounds(self.bounds) 
+        x_axis = np.linspace(min_x, max_x, shape[0])
+        z_axis = np.linspace(min_z, max_z, shape[1])
+        
+        return (x_axis, z_axis)
 
     @_deprecations.renamed_kwargs("1.0.5", imaged_points="image")
     def scan_convert(
@@ -113,9 +129,10 @@ class SectorScan(Scan):
         *,  # Remaining args must be passed by name (to avoid confusion)
         shape: Optional[Tuple[int, int]] = None,
         default_value: Optional[np.ndarray] = 0.0,
+        cartesian_axes: Optional[Tuple[np.ndarray, np.ndarray]] = None,
     ):
         return scan_convert(
-            image, self, azimuth_axis, depth_axis, shape=shape, default_value=default_value
+            image, self, azimuth_axis, depth_axis, shape=shape, default_value=default_value, cartesian_axes=cartesian_axes,
         )
 
     @property

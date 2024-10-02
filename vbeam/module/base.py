@@ -157,7 +157,7 @@ class _ModuleMeta(abc.ABCMeta):
                 f"{missing_names}"
             )
 
-        np.make_traceable(cls)
+        # np.make_traceable(cls)
         return self
 
     # This bit is kind of sneaky. This is the reason that `_has_dataclass_init` is done

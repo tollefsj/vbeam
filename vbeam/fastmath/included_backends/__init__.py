@@ -34,7 +34,8 @@ included_backends = {
     "torch": get_torch_backend,
     "tensorflow": get_tensorflow_backend,
 }
-backend_priority = ["jax", "torch", "numpy"]
+# backend_priority = ["numpy", "jax", "torch"]
+backend_priority = ["torch","numpy", "jax"]
 
 
 def get_best_available_backend():

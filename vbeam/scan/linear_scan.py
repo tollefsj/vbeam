@@ -1,4 +1,4 @@
-from typing import Callable, Optional, Tuple, Union, overload
+from typing import Callable, Optional, Tuple, Union, overload, Literal
 
 from vbeam.fastmath import numpy as np
 from vbeam.scan.base import CoordinateSystem, Scan

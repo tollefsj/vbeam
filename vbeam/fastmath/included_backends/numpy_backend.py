@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-
+import functools
 import numpy as np
+import scipy
 
 from vbeam.fastmath.backend import Backend, i_at
 from vbeam.fastmath.traceable import (
@@ -9,21 +10,118 @@ from vbeam.fastmath.traceable import (
     is_traceable_dataclass,
 )
 
+# def ensure_numpy_wrapper(f):
+#     @functools.wraps(f)
+#     def wrapped(*args, **kwargs):
+#         return NumpyWrapper(f(*args, **kwargs))
+#     return wrapped
+
+# class NumpyWrapper(np.ndarray):
+
+#     def __new__(cls, a):
+#         obj = np.asarray(a).view(cls)
+#         return obj
+
+#     def to(self, device):
+#         if device!='cpu':
+#             raise ValueError("Numpy backend only supports device=CPU")
+#         return self
 
 class NumpyBackend(Backend):
     @property
     def ndarray(self):
         return np.ndarray
 
-    def zeros(self, shape, dtype=None):
+    def zeros(self, shape, dtype=None, device='cpu'):
         return np.zeros(shape, dtype)
 
-    def ones(self, shape, dtype=None):
+    def ones(self, shape, dtype=None, device='cpu'):
         return np.ones(shape, dtype)
 
     @property
     def pi(self):
         return np.pi
+
+    @property
+    def int8(self):
+        return np.int8
+
+    @property
+    def int16(self):
+        return np.int16
+
+    @property
+    def int32(self):
+        return np.int32 
+    
+    @property
+    def int64(self):
+        return np.int64       
+    
+    @property
+    def uint8(self):
+        return np.uint8
+
+    @property
+    def uint16(self):
+        return np.uint16
+
+    @property
+    def uint32(self):
+        return np.uint32 
+    
+    @property
+    def uint64(self):
+        return np.uint64       
+
+    @property
+    def float32(self):
+        return np.float32 
+    
+    @property
+    def float64(self):
+        return np.float64   
+
+    @property
+    def complex64(self):
+        return np.complex64   
+    
+    @property
+    def complex128(self):
+        return np.complex128         
+
+    def to_dtype(self, x, dtype):
+        return x.astype(dtype)
+    
+    def to_int32(self, x):
+        return x.astype(np.int32)
+    
+    def to_int64(self, x):
+        return x.astype(np.int64)
+    
+    def to_uint8(self, x):
+        return x.astype(np.uint8)
+
+    def to_uint16(self, x):
+        return x.astype(np.uint16)
+    
+    def to_uint32(self, x):
+        return x.astype(np.uint32) 
+    
+    def to_uint64(self, x):
+        return x.astype(np.uint64)  
+          
+    def to_float32(self, x):
+        return x.astype(np.float32) 
+    
+    def to_float64(self, x):
+        return x.astype(np.float64) 
+      
+    def to_complex64(self, x):
+        return x.astype(np.complex64) 
+      
+    def to_complex128(self, x):
+        return x.astype(np.complex128)  
 
     def abs(self, x):
         return np.abs(x)
@@ -94,8 +192,8 @@ class NumpyBackend(Backend):
     def prod(self, a, axis=None):
         return np.prod(a, axis=axis)
 
-    def mean(self, a, axis=None):
-        return np.mean(a, axis=axis)
+    def mean(self, a, axis=None, keepdims=False):
+        return np.mean(a, axis=axis, keepdims=keepdims)
     
     def median(self, a, axis=None):
         return np.median(a, axis=axis)
@@ -201,6 +299,85 @@ class NumpyBackend(Backend):
 
     def shape(self, x):
         return np.shape(x)
+    
+    def ascontiguousarray(self, x):
+        return np.ascontiguousarray(x)
+    
+    def conj(self, x):
+        return np.conj(x)
+    
+    def real(self, x):
+        return np.real(x)    
+    
+    def imag(self, x):
+        return np.imag(x)   
+    
+    def matmul(self, x1, x2):
+        return np.matmul(x1, x2)
+
+    def reshape(self, x, shape):
+        return np.reshape(x, shape)
+
+    def bitwise_and(self, x1, x2):
+        return np.bitwise_and(x1, x2)   
+    
+    def bitwise_or(self, x1, x2):
+        return np.bitwise_or(x1, x2)    
+
+    def left_shift(self, x1, x2):
+        return np.left_shift(x1, x2)  
+    
+    def right_shift(self, x1, x2):
+        return np.right_shift(x1, x2)  
+    
+    def double(self, x):
+        return np.double(x)      
+
+    def dot(self, x1, x2):
+        return np.dot(x1, x2) 
+
+    def power(self, x1, x2):
+        return np.power(x1, x2)     
+    
+    def eye(self, N, M=None):
+        return np.eye(N, M=M)     
+        
+    def from_numpy(self, x):
+        return x
+    
+    def to_numpy(self, x):
+        return x
+
+    def to_device(self, x, device):
+        if device!='cpu':
+            raise ValueError("Numpy backend only supports device=CPU")        
+        return x
+
+    def get_activate_backend(self) -> str:
+        return 'numpy'    
+
+    def correlate2d(self, x1, x2):
+        return scipy.signal.correlate2d(x1, x2)
+    
+    def angle(self, x):
+        return np.angle(x)    
+
+    class fft:
+        @staticmethod
+        def ifftshift(x, axes=None):
+            return np.fft.ifftshift(x, axes=axes)
+
+    class random:
+        @staticmethod
+        def randn(*vars, dtype=np.float64, device='cpu'):
+            if device!='cpu':
+                raise ValueError(f"Unsupported device {device} on numpy backend")
+            return np.random.randn(*vars).astype(dtype)
+        
+    class linalg:
+        @staticmethod
+        def qr(x, mode='reduced'):
+            return np.linalg.qr(x, mode)      
 
     class add:
         @staticmethod
@@ -248,6 +425,8 @@ class NumpyBackend(Backend):
         as_dataclass = dataclass(type(obj))  # Make it a dataclass, though.
         obj.__class__ = as_dataclass
         return obj
+    
+
 
 
 def _set_out_axes(result: np.ndarray, out_axis: int):
@@ -290,3 +469,5 @@ def _recombine_traceables(results: list):
         )
     else:
         return np.array(results)
+
+

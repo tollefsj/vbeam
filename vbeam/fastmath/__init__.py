@@ -119,6 +119,6 @@ def proxy_backend(backend_manager: BackendManager) -> Backend:
 
     return ProxyBackend()
 
-
+    
 backend_manager = BackendManager()
 numpy = proxy_backend(backend_manager)

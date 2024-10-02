@@ -23,6 +23,46 @@ class JaxBackend(Backend):
     @property
     def pi(self):
         return jnp.pi
+    
+    @property
+    def int32(self):
+        return jnp.int32 
+    
+    @property
+    def int64(self):
+        return jnp.int64   
+    
+    @property
+    def uint8(self):
+        return jnp.uint8
+
+    @property
+    def uint16(self):
+        return jnp.uint16
+
+    @property
+    def uint32(self):
+        return jnp.uint32 
+    
+    @property
+    def uint64(self):
+        return jnp.uint64      
+
+    @property
+    def float32(self):
+        return jnp.float32 
+    
+    @property
+    def float64(self):
+        return jnp.float64   
+
+    @property
+    def complex64(self):
+        return jnp.complex64   
+    
+    @property
+    def complex128(self):
+        return jnp.complex128    
 
     def abs(self, x):
         return jnp.abs(x)
@@ -93,8 +133,8 @@ class JaxBackend(Backend):
     def prod(self, a, axis=None):
         return jnp.prod(a, axis=axis)
 
-    def mean(self, a, axis=None):
-        return jnp.mean(a, axis=axis)
+    def mean(self, a, axis=None, keepdims=False):
+        return jnp.mean(a, axis=axis, keepdims=keepdims)
 
     def median(self, a, axis=None):
         return jnp.median(a, axis=axis)
@@ -203,7 +243,59 @@ class JaxBackend(Backend):
 
     def shape(self, x):
         return jnp.shape(x)
+    
+    def ascontiguousarray(self, x):
+        Warning("ascontiguousarra is not implemented for jax")
+        return x    
+    
+    def conj(self, x):
+        return jnp.conj(x)      
 
+    def real(self, x):
+        return jnp.real(x)         
+       
+    def imag(self, x):
+        return jnp.imag(x)  
+
+    def matmul(self, x1, x2):
+        return jnp.matmul(x1, x2)  
+
+    def reshape(self, x, shape=None):
+        raise ValueError("Not impl") 
+
+    def bitwise_and(self, x1, x2):
+        raise ValueError("Not impl")   
+    
+    def bitwise_or(self, x1, x2):
+        raise ValueError("Not impl")    
+
+    def left_shift(self, x1, x2):
+        raise ValueError("Not impl")  
+    
+    def right_shift(self, x1, x2):
+        raise ValueError("Not impl")   
+    
+    def double(self, x):
+        raise ValueError("Not impl")   
+
+    def dot(self, x1, x2):
+        raise ValueError("Not impl")     
+
+    def power(self, x1, x2):
+        raise ValueError("Not impl")   
+
+    def eye(self, N, M=None):
+        raise ValueError("Not impl")                        
+
+    class random:
+        @staticmethod
+        def randn(*vars, dtype=jnp.float64, device=None):
+            raise ValueError("Unsupported function for backend jax")
+            device = jax.devices()[0]
+            with jax.default_device(device):
+                arr = jax.random.normal(shape=tuple(vars), dtype=dtype)
+            return arr
+    
     class add:
         @staticmethod
         def at(a, indices, b):

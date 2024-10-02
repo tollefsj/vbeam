@@ -98,32 +98,48 @@ def scan_convert(
     azimuth_axis: int = -2,
     depth_axis: int = -1,
     *,  # Remaining args must be passed by name (to avoid confusion)
-    shape: Optional[Tuple[int, int]] = None,
+    shape: Optional[Union[Tuple[int, int], str]] = None,
     default_value: Optional[np.ndarray] = 0.0,
+    cartesian_axes: Optional[Tuple[np.ndarray, np.ndarray]] = None,
 ):
     from vbeam.scan import CoordinateSystem, Scan
-
+    
     if isinstance(bounds, Scan):
         if not bounds.coordinate_system == CoordinateSystem.POLAR:
             raise ValueError("You may only scan convert from polar coordinates.")
+        min_x, max_x, min_z, max_z = bounds.cartesian_bounds
         bounds = bounds.bounds
-    if shape is None:
-        shape = image.shape[azimuth_axis], image.shape[depth_axis]
-
-    width, height = image.shape[azimuth_axis], image.shape[depth_axis]
     min_az, max_az, min_depth, max_depth = bounds
 
+    if shape is None:
+        shape = image.shape[azimuth_axis], image.shape[depth_axis]
+    elif isinstance(shape, str): 
+        if shape=='keep_aspect_ratio':
+            out_height = image.shape[depth_axis]
+            azimuth_scale = np.abs((max_x- min_x) / (max_z - min_z))
+            shape = int(np.round(out_height * azimuth_scale)), out_height
+        else:
+            raise ValueError(f'Unsupported shape {shape}')
+        
+    width, height = image.shape[azimuth_axis], image.shape[depth_axis]
+    
     # Get the points in the cartesian grid
-    min_x, max_x, min_z, max_z = polar_bounds_to_cartesian_bounds(bounds)
-    points = grid(
-        np.linspace(min_x, max_x, shape[0]),
-        np.linspace(min_z, max_z, shape[1]),
-    )
+    if cartesian_axes is None:
+        min_x, max_x, min_z, max_z = polar_bounds_to_cartesian_bounds(bounds)
+        points = grid(
+            np.linspace(min_x, max_x, shape[0]),
+            np.linspace(min_z, max_z, shape[1]),
+        )
+    else:
+        points = grid(
+            cartesian_axes[0],
+            cartesian_axes[1],
+        )
     x, z = points[..., 0], points[..., 1]  # (Ignore y; scan_convert only supports 2D!)
     # and transform each point to polar coordinates.
     angles = np.arctan2(x, z)
     radii = np.sqrt(x**2 + z**2)
-
+    
     # Interpolate the imaged points, sampled at the transformed points.
     return FastInterpLinspace.interp2d(
         angles,
