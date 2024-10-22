@@ -14,7 +14,7 @@ class FastInterpLinspace(InterpolationSpace1D):
     min: float
     d: float
     n: int
-
+    
     @staticmethod
     def from_array(arr: np.ndarray) -> "FastInterpLinspace":
         # Assumes that arr was created as a linspace.
@@ -99,6 +99,10 @@ class FastInterpLinspace(InterpolationSpace1D):
         edge_handling: str = "Value",
         default_value: float = 0.0,
     ) -> np.ndarray:
+
+        device = z.device
+        x = np.to_device(x, device)
+        y = np.to_device(y, device)
 
         # Ensure that the axes are positive numbers
         azimuth_axis = ensure_positive_index(z.ndim, azimuth_axis)
