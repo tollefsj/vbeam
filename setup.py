@@ -16,5 +16,6 @@ setup(
         "pyuff_ustb>=2.0.7",
         "scipy",
         "spekk",
+        "typing_extensions",
     ],
 )
